@@ -209,6 +209,8 @@
     <string name="title_checkbox_enable_sops">Optimize game settings</string>
     <string name="summary_checkbox_enable_sops">Allow GFE to modify game settings for optimal streaming</string>
     <string name="title_checkbox_host_audio">Play audio on PC</string>
+    <string name="title_outer_deadzone_threshold">Outer Deadzone Threshold</string>
+    <string name="summary_outer_deadzone_threshold">Threshold for the outer controller deadzone</string>
     <string name="summary_checkbox_host_audio">Play audio from the computer and this device</string>
 
     <string name="category_advanced_settings">Advanced Settings</string>

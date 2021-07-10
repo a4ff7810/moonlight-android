@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.util.SparseArray;
 import android.view.InputDevice;
 import android.view.InputEvent;
@@ -54,6 +55,7 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
     private final NvConnection conn;
     private final Activity activityContext;
     private final double stickDeadzone;
+    private final short outerDeadzoneThreshold;
     private final InputDeviceContext defaultContext = new InputDeviceContext();
     private final GameGestures gestures;
     private final Vibrator deviceVibrator;
@@ -68,6 +70,11 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         this.gestures = gestures;
         this.prefConfig = prefConfig;
         this.deviceVibrator = (Vibrator) activityContext.getSystemService(Context.VIBRATOR_SERVICE);
+
+        // TODO: Make use of `prefConfig` instead!
+        this.outerDeadzoneThreshold = Short.parseShort(PreferenceManager.getDefaultSharedPreferences(activityContext)
+                        .getString("outer_deadzone_threshold", "0")
+        );
 
         // HACK: For now we're hardcoding a 7% deadzone. Some deadzone
         // is required for controller batching support to work.
@@ -872,10 +879,25 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
                     (short)0, (byte)0, (byte)0, (short)0, (short)0, (short)0, (short)0);
         }
         else {
+
+            //TODO: Put this some place where it makes more sense. Potentially `handleAxisSet`?
+
+            // Cartesian to polar.
+            double radius = Math.sqrt( Math.pow(leftStickX, 2) + Math.pow(leftStickY, 2) );
+            double angleInRadians = Math.atan2( leftStickY, leftStickX );
+
+            if (radius > this.outerDeadzoneThreshold) radius = Short.MAX_VALUE;
+
+            //LimeLog.info("Radius: " + Double.toString(radius) + " | Angle: " + Double.toString(angleInRadians));
+
+            // polar to Cartesian
+            Double x = Math.cos( angleInRadians ) * radius;
+            Double y = Math.sin( angleInRadians ) * radius;
+
             conn.sendControllerInput(controllerNumber, getActiveControllerMask(),
                     inputMap,
                     leftTrigger, rightTrigger,
-                    leftStickX, leftStickY,
+                    x.shortValue(), y.shortValue(),
                     rightStickX, rightStickY);
         }
     }

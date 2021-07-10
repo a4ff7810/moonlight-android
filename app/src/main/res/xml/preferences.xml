@@ -56,6 +56,13 @@
             android:title="@string/title_checkbox_touchscreen_trackpad"
             android:summary="@string/summary_checkbox_touchscreen_trackpad"
             android:defaultValue="true" />
+        <EditTextPreference
+            android:defaultValue="28000"
+            android:key="outer_deadzone_threshold"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:summary="@string/summary_outer_deadzone_threshold"
+            android:title="@string/title_outer_deadzone_threshold" />
         <CheckBoxPreference
             android:key="checkbox_multi_controller"
             android:title="@string/title_checkbox_multi_controller"
